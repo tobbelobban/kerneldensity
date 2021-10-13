@@ -6,9 +6,8 @@ set(HEADER_FILES
     include/KTH/kerneldensityestimation/processors/fullkde.h
     include/KTH/kerneldensityestimation/processors/fullkdecl.h
     include/KTH/kerneldensityestimation/processors/sequentialkde.h
+    include/KTH/kerneldensityestimation/processors/volumechannelselector.h
     include/KTH/kerneldensityestimation/processors/volumeextrema.h
-    include/KTH/kerneldensityestimation/processors/volumeextremapool.h
-    include/KTH/kerneldensityestimation/processors/volumethresholder.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -17,9 +16,8 @@ set(SOURCE_FILES
     src/processors/fullkde.cpp
     src/processors/fullkdecl.cpp
     src/processors/sequentialkde.cpp
+    src/processors/volumechannelselector.cpp
     src/processors/volumeextrema.cpp
-    src/processors/volumeextremapool.cpp
-    src/processors/volumethresholder.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

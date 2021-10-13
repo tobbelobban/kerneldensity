@@ -32,15 +32,14 @@
 #include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/bufferport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeExtremaPool, Volume Extrema Pool}
- * ![](org.inviwo.VolumeExtremaPool.png?classIdentifier=org.inviwo.VolumeExtremaPool)
+/** \docpage{org.inviwo.VolumeChannelSelector, Volume Channel Selector}
+ * ![](org.inviwo.VolumeChannelSelector.png?classIdentifier=org.inviwo.VolumeChannelSelector)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -53,10 +52,12 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeExtremaPool : public PoolProcessor {
+class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeChannelSelector : public Processor {
 public:
-    VolumeExtremaPool();
-    virtual ~VolumeExtremaPool() = default;
+	enum class Dimension { X, Y, Z };
+
+    VolumeChannelSelector();
+    virtual ~VolumeChannelSelector() = default;
 
     virtual void process() override;
 
@@ -65,20 +66,9 @@ public:
 
 private:
     VolumeInport volume_in_;
-    MeshOutport mesh_out_;
+	VolumeOutport volume_out_;
 
-	BoolProperty select_maxima_prop;
-	BoolProperty select_minima_prop;
-	BoolProperty select_extrema_compare26;
-	BoolProperty select_use_abs;
-
-	int nr_maxima = 0;
-	int nr_minima = 0;
-
-	std::shared_ptr<Buffer<vec3>> pos_buffer;
-    std::shared_ptr<Buffer<int>> index_buffer;
-    
-	void makeReturnBuffer();
+	TemplateOptionProperty<Dimension> dimension_;
 };
 
 }  // namespace inviwo

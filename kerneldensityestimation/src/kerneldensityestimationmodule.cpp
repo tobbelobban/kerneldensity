@@ -31,9 +31,8 @@
 #include <KTH/kerneldensityestimation/processors/fullkde.h>
 #include <KTH/kerneldensityestimation/processors/fullkdecl.h>
 #include <KTH/kerneldensityestimation/processors/sequentialkde.h>
+#include <KTH/kerneldensityestimation/processors/volumechannelselector.h>
 #include <KTH/kerneldensityestimation/processors/volumeextrema.h>
-#include <KTH/kerneldensityestimation/processors/volumeextremapool.h>
-#include <KTH/kerneldensityestimation/processors/volumethresholder.h>
 
 namespace inviwo {
 
@@ -48,9 +47,8 @@ KernelDensityEstimationModule::KernelDensityEstimationModule(InviwoApplication* 
     registerProcessor<FullKDECL>();
     // registerProcessor<KernelDensityEstimationProcessor>();
     registerProcessor<SequentialKDE>();
+    registerProcessor<VolumeChannelSelector>();
     registerProcessor<VolumeExtrema>();
-    registerProcessor<VolumeExtremaPool>();
-    registerProcessor<VolumeThresholder>();
     
 	OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
     

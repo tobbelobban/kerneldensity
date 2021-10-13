@@ -31,15 +31,16 @@
 
 #include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/ports/bufferport.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeThresholder, Volume Thresholder}
- * ![](org.inviwo.VolumeThresholder.png?classIdentifier=org.inviwo.VolumeThresholder)
+/** \docpage{org.inviwo.VolumeExtrema, Volume Extrema}
+ * ![](org.inviwo.VolumeExtrema.png?classIdentifier=org.inviwo.VolumeExtrema)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -52,10 +53,10 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeThresholder : public Processor {
+class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeExtrema : public Processor {
 public:
-    VolumeThresholder();
-    virtual ~VolumeThresholder() = default;
+    VolumeExtrema();
+    virtual ~VolumeExtrema() = default;
 
     virtual void process() override;
 
@@ -63,10 +64,24 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-	VolumeInport volume_in_;
-    VolumeOutport volume_out_;
+    VolumeInport volume_in_;
+    MeshOutport mesh_out_;
 
-    FloatProperty threshold_prop;
+	BoolProperty select_maxima;
+	BoolProperty select_minima;
+	BoolProperty select_use_N26;
+	BoolProperty select_use_abs;
+
+	size_t nr_maxima = 0;
+	size_t nr_minima = 0;
+
+	bool use_abs;
+
+	int extreme_value_check_N26(const size_t index, const size3_t coords, const size3_t vol_dims, const float* vol_data);
+	int extreme_value_check_N6(const size_t index, const size3_t coords, const size3_t vol_dims, const float* vol_data);
+
 };
+
+	
 
 }  // namespace inviwo

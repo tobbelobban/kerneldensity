@@ -58,7 +58,7 @@ SequentialKDE::SequentialKDE()
 	, volume_out_("volumeOutport")
 	, bandwidth_prop("KDEbandwidth", "Bandwidth", 0.0001, 0.00001, 3, 0.00001)
 	, cutoff_prop("cutoff", "Cutoff", 0.0001, 0.00001, 3, 0.00001)
-	, fast_KDE_prop("fast_kde", "Fast KDE", false)    
+	, fast_KDE_prop("fast_kde", "Use fast KDE", true)    
 {
     
 	addPort(volume_in_);
@@ -217,18 +217,6 @@ void SequentialKDE::fastKDE() {
 	makeKDEStencil(extrema_size, h);
 	kde_vol = std::make_shared<Volume>(vol_dims, DataFloat32::get());
     volume_out_.setData(kde_vol);
-
-	LogProcessorInfo("Stencil dims:");
-	LogProcessorInfo(*stencil_dims);
-	const int stencil_size = stencil_dims->x * stencil_dims->y * stencil_dims->z * 4;
-	LogProcessorInfo("Stencil bytes:");
-	LogProcessorInfo(stencil_size);
-
-	//LogProcessorInfo("Stencil vals:");
-	//for(const auto e : *kde_stencil)
-	//	LogProcessorInfo(e);
-	
-	//return;
     
 	// compute & store KDE
     kde_vol = std::make_shared<Volume>(vol_dims, DataFloat32::get());
@@ -245,21 +233,21 @@ void SequentialKDE::fastKDE() {
 			double * max_values = new double[omp_get_max_threads()]{0};
 
  			for (int i = 0; i < extrema_size; ++i) {
-				const ivec3 extrema_idx(extrema_idx[i] % vol_dims.x, (extrema_idx[i] / vol_dims.x) % vol_dims.y, extrema_idx[i] / xy_);
+				const size3_t extrema_idx(extrema_idx[i] % vol_dims.x, (extrema_idx[i] / vol_dims.x) % vol_dims.y, extrema_idx[i] / xy_);
 				#pragma omp parallel for default(shared)
 				for (int iz = extrema_idx.z - stencil_half_dims->z; iz <= extrema_idx.z + stencil_half_dims->z; ++iz) {
 					if (iz < 0) continue;
 					if (iz >= vol_dims.z) break;
-					const int stencil_iz = iz - extrema_idx.z + stencil_half_dims->z;
+					const size_t stencil_iz = iz - extrema_idx.z + stencil_half_dims->z;
 					for (int iy = extrema_idx.y - stencil_half_dims->y; iy <= extrema_idx.y + stencil_half_dims->y; ++iy) {
 						if (iy < 0) continue;	
 						if(iy >= vol_dims.y) break;
-						const int stencil_iy = iy - extrema_idx.y + stencil_half_dims->y;
+						const size_t stencil_iy = iy - extrema_idx.y + stencil_half_dims->y;
 						for (int ix = extrema_idx.x - stencil_half_dims->x; ix <= extrema_idx.x + stencil_half_dims->x; ++ix) {
 							if (ix < 0) continue;
 							if(ix >= vol_dims.x) break;
-							const int curr_i = ix + iy * vol_dims.x + iz * xy_;
-							const int stencil_i = ix - extrema_idx.x + stencil_half_dims->x + stencil_iy * stencil_dims->x + stencil_iz * stencil_xy_;
+							const size_t curr_i = ix + iy * vol_dims.x + iz * xy_;
+							const size_t stencil_i = ix - extrema_idx.x + stencil_half_dims->x + stencil_iy * stencil_dims->x + stencil_iz * stencil_xy_;
 							kde_data[curr_i] += KDEType(kde_stencil->at(stencil_i));
 							if(i < extrema_size-1) continue; // wait until last extrema to compute maximum
 							if(kde_data[curr_i] > max_values[omp_get_thread_num()]) max_values[omp_get_thread_num()] = kde_data[curr_i];
