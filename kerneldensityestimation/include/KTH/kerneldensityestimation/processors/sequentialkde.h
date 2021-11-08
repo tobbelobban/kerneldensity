@@ -73,7 +73,7 @@ private:
 	FloatProperty cutoff_prop;
     BoolProperty fast_KDE_prop;
 
-	std::shared_ptr<Volume> kde_vol;
+	//std::shared_ptr<Volume> kde_vol;
 	std::shared_ptr<std::vector<float>> kde_stencil;
 	std::shared_ptr<ivec3> stencil_dims;
 	std::shared_ptr<ivec3> stencil_half_dims;
