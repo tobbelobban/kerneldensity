@@ -61,7 +61,8 @@ VolumeExtrema::VolumeExtrema()
     , select_use_N26("tighter_extrema", "Use N_26 neighbourhood", false)
 	, select_use_abs("use_absolute_comp", "Absolute", false)
 	{
-
+	
+	use_abs = false;
     addPort(volume_in_);
     addPort(mesh_out_);
 
@@ -176,7 +177,7 @@ void VolumeExtrema::process() {
 	pos_v.reserve(init_buff_sz);
 	index_v.reserve(init_buff_sz);
 	// iterate over input volume and find extrema
-	size_t index = 0;
+	size_t index = 0, num_extrema = 0;
 	for (int iz = 0; iz < vol_dims.z; ++iz) {
 		for (int iy = 0; iy < vol_dims.y; ++iy) {
 			for (int ix = 0; ix < vol_dims.x; ++ix) {	
@@ -194,12 +195,14 @@ void VolumeExtrema::process() {
 						if(want_minima) {
 							pos_v.push_back(physical_pos);
 							index_v.push_back(index);
+							++num_extrema;
 						} 
 						break;
 					case 1:		// maximum
 						if(want_maxima) {
 							pos_v.push_back(physical_pos);
 							index_v.push_back(index);
+							++num_extrema;
 						} 
 						break;
 				}
@@ -207,6 +210,9 @@ void VolumeExtrema::process() {
 			}
 		}
 	}
+	// print number of extrema
+	LogProcessorInfo("Number of extrema: ");
+	LogProcessorInfo(num_extrema);
 	// create buffers for mesh
 	auto pos_buffer = std::make_shared<Buffer<vec3>>(std::make_shared<BufferRAMPrecision<vec3>>(pos_v));
 	auto index_buffer = std::make_shared<Buffer<int>>(std::make_shared<BufferRAMPrecision<int>>(index_v));
