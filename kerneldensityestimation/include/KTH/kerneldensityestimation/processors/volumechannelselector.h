@@ -34,6 +34,9 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
@@ -54,7 +57,7 @@ namespace inviwo {
  */
 class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeChannelSelector : public Processor {
 public:
-	enum class Dimension { X, Y, Z };
+	enum class Dimension { X = 0, Y = 1, Z = 2 };
 
     VolumeChannelSelector();
     virtual ~VolumeChannelSelector() = default;

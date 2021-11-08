@@ -65,7 +65,7 @@ void VolumeChannelSelector::process() {
 			// set vol dims and size
 			const size3_t dims = vol_in_ram->getDimensions();	
 			const size_t vol_size = dims.x * dims.y * dims.z;
-			const size_t c = static_cast<int>(dimension_.get());
+			const int c = static_cast<const int>(dimension_.get());
 			// get raw ptr to input volume
 			const vec3* raw_in_ptr = static_cast<const vec3*>(vol_in_ram->getData());
 			// init out vol
