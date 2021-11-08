@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <KTH/kerneldensityestimation/kerneldensityestimationmodule.h>
+#include <KTH/kerneldensityestimation/processors/slicesequentialkde.h>
 #include <KTH/kerneldensityestimation/processors/fullkde.h>
 #include <KTH/kerneldensityestimation/processors/fullkdecl.h>
 #include <KTH/kerneldensityestimation/processors/sequentialkde.h>
@@ -43,6 +44,7 @@ KernelDensityEstimationModule::KernelDensityEstimationModule(InviwoApplication* 
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
+    registerProcessor<SliceSequentialKDE>();
     registerProcessor<FullKDE>();
     registerProcessor<FullKDECL>();
     // registerProcessor<KernelDensityEstimationProcessor>();
