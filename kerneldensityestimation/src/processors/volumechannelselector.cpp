@@ -45,10 +45,10 @@ VolumeChannelSelector::VolumeChannelSelector()
     : Processor()
     , volume_in_("Volume_inport")
 	, volume_out_("Volume_outport")
-	, dimension_("dimension", "Dimension",
-              {{"x_dim", "X", Dimension::X},
-               {"y_dim", "Y", Dimension::Y},
-               {"z_dim", "Z", Dimension::Z}}) {
+	, dimension_("dimension", "Dimension",	{	{"x_dim", "X", Dimension::X},
+												{"y_dim", "Y", Dimension::Y},
+												{"z_dim", "Z", Dimension::Z},
+												{"w_dim", "W", Dimension::W}	}) {
 
     addPort(volume_in_);
 	addPort(volume_out_);
@@ -60,14 +60,21 @@ VolumeChannelSelector::VolumeChannelSelector()
 void VolumeChannelSelector::process() {
     const std::shared_ptr<const Volume> volume_in_ptr = volume_in_.getData();
 	float min, max;
-	std::shared_ptr<Volume> single_channel_vol = volume_in_ptr->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<Volume>, dispatching::filter::Float3s>(
+	std::shared_ptr<Volume> single_channel_vol = volume_in_ptr->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<Volume>, dispatching::filter::FloatVecs>(
 		[&](auto vol_in_ram) {
+			// get volume type
+			using VecType = util::PrecisionValueType<decltype(vol_in_ram)>;
 			// set vol dims and size
 			const size3_t dims = vol_in_ram->getDimensions();	
 			const size_t vol_size = dims.x * dims.y * dims.z;
 			const int c = static_cast<const int>(dimension_.get());
+			//check that the selected dimensions exists in volume
+			if(VecType::length() <= c) {
+				LogProcessorError("Selected dimension doeesn't exist in volume");
+				return std::make_shared<Volume>(std::make_shared<VolumeRAMPrecision<float>>(dims));
+			}
 			// get raw ptr to input volume
-			const vec3* raw_in_ptr = static_cast<const vec3*>(vol_in_ram->getData());
+			const VecType* raw_in_ptr = vol_in_ram->getDataTyped();
 			// init out vol
 			auto out_vol_RAM_repr = std::make_shared<VolumeRAMPrecision<float>>(dims);
 			float* out_vol_raw_ptr = out_vol_RAM_repr->getDataTyped();

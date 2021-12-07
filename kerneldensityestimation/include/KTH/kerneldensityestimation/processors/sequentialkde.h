@@ -70,8 +70,9 @@ private:
     VolumeOutport volume_out_;
 
 	FloatProperty bandwidth_prop;
-	FloatProperty cutoff_prop;
+	FloatProperty cutoff_prop;                                                                 
     BoolProperty fast_KDE_prop;
+	BoolProperty use_scaling_prop;
 
 	//std::shared_ptr<Volume> kde_vol;
 	std::shared_ptr<std::vector<float>> kde_stencil;

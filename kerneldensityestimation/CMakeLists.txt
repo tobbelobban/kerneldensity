@@ -3,23 +3,25 @@ ivw_module(KernelDensityEstimation)
 set(HEADER_FILES
     include/KTH/kerneldensityestimation/kerneldensityestimationmodule.h
     include/KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h
-    include/KTH/kerneldensityestimation/processors/slicesequentialkde.h
     include/KTH/kerneldensityestimation/processors/fullkde.h
     include/KTH/kerneldensityestimation/processors/fullkdecl.h
     include/KTH/kerneldensityestimation/processors/sequentialkde.h
+    include/KTH/kerneldensityestimation/processors/slicesequentialkde.h
     include/KTH/kerneldensityestimation/processors/volumechannelselector.h
     include/KTH/kerneldensityestimation/processors/volumeextrema.h
+    include/KTH/kerneldensityestimation/processors/volumesubsetdrawer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/kerneldensityestimationmodule.cpp
-    src/processors/slicesequentialkde.cpp
     src/processors/fullkde.cpp
     src/processors/fullkdecl.cpp
     src/processors/sequentialkde.cpp
+    src/processors/slicesequentialkde.cpp
     src/processors/volumechannelselector.cpp
     src/processors/volumeextrema.cpp
+    src/processors/volumesubsetdrawer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
