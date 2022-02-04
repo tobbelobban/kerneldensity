@@ -38,20 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SequentialKDE, Sequential KDE}
- * ![](org.inviwo.SequentialKDE.png?classIdentifier=org.inviwo.SequentialKDE)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_KERNELDENSITYESTIMATION_API SequentialKDE : public Processor {
 public:
     SequentialKDE();
@@ -63,22 +49,23 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    
+    // ports
 	VolumeInport volume_in_;
 	MeshInport mesh_in_;
-    
     VolumeOutport volume_out_;
 
-	FloatProperty bandwidth_prop;
-	FloatProperty cutoff_prop;                                                                 
-    BoolProperty fast_KDE_prop;
-	BoolProperty use_scaling_prop;
+	// properties
+	FloatProperty bandwidth_prop;	// for choosing KDE bandwidth
+	FloatProperty cutoff_prop;		// for choosing stencil size in fastKDE()								                              
+    BoolProperty fast_KDE_prop;		// if user wants fastKDE
+	BoolProperty use_scaling_prop;	// if user wants to scale result
 
-	//std::shared_ptr<Volume> kde_vol;
+	// containers for stencil
 	std::shared_ptr<std::vector<float>> kde_stencil;
 	std::shared_ptr<ivec3> stencil_dims;
 	std::shared_ptr<ivec3> stencil_half_dims;
 
+	// functions 
 	void KDE();
 	void fastKDE();
     void makeKDEStencil(const int nr_extrema, const double h);

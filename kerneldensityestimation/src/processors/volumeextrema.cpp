@@ -58,7 +58,7 @@ VolumeExtrema::VolumeExtrema()
 	, mesh_out_("meshOutport")
 	, select_maxima("maxima_selector", "Maxima", true)
     , select_minima("minima_selector", "Minima", false)
-    , select_use_N26("tighter_extrema", "Use N_26 neighbourhood", false)
+    , select_use_N26("n26", "Use N_26 neighbourhood", false)
 	, select_use_abs("use_absolute_comp", "Absolute", false)
 	{
 	
@@ -72,6 +72,15 @@ VolumeExtrema::VolumeExtrema()
 	addProperty(select_use_abs);
 }
 
+/*
+	Check if vertex at coords is an extrema in vol_data by comparing with 
+	neighbourhood consisting of vertices that share either an edge, face
+	or voxel with vertex at coords. In total 26 vertices.
+	Returns:
+		0 - not extrema
+	   -1 - minima
+		1 - maxima
+*/
 int VolumeExtrema::extreme_value_check_N26(	const size_t index,
 											const size3_t coords,
 											const size3_t vol_dims,
@@ -106,6 +115,15 @@ int VolumeExtrema::extreme_value_check_N26(	const size_t index,
 	return minb*-1 + maxb;
 }
 
+/*
+	Check if vertex at coords is an extrema in vol_data by comparing with
+	neighbourhood consisting of vertices that share an edge with vertex
+	at coords. In total 6 vertices.
+	Returns:
+		0 - not extrema
+	   -1 - minima
+		1 - maxima
+*/
 int VolumeExtrema::extreme_value_check_N6(	const size_t index,
 											const size3_t coords,
 											const size3_t vol_dims,
@@ -155,6 +173,7 @@ int VolumeExtrema::extreme_value_check_N6(	const size_t index,
 }
 
 void VolumeExtrema::process() {
+	// input volume pointer
     const std::shared_ptr<const Volume> in_v_ptr = volume_in_.getData();
 	// get properties
 	const bool want_minima = select_minima.get();
@@ -169,6 +188,7 @@ void VolumeExtrema::process() {
 	const size_t vol_size = vol_dims.x * vol_dims.y * vol_dims.z;
 	// get access to raw input data
 	const VolumeRAM* v_ram = in_v_ptr->getRepresentation<VolumeRAM>();
+	// NOTE! assumption: input volume contains single-precision floats
 	const float* in_v_raw_ptr = static_cast<const float*>(v_ram->getData());
 	// init buffers for extrema
 	const int init_buff_sz = vol_size * 0.005f; // 0.5 % of total volume size
@@ -181,7 +201,10 @@ void VolumeExtrema::process() {
 	for (int iz = 0; iz < vol_dims.z; ++iz) {
 		for (int iy = 0; iy < vol_dims.y; ++iy) {
 			for (int ix = 0; ix < vol_dims.x; ++ix) {	
-				vec3 physical_pos = offset + vec3(ix,iy,iz) * vec3(basis[0][0]/(vol_dims.x-1), basis[1][1]/(vol_dims.y-1), basis[2][2]/(vol_dims.z-1));
+				// get current vertex real world position
+				vec3 physical_pos = offset + vec3(ix,iy,iz) * vec3(	basis[0][0]/(vol_dims.x-1), 
+																	basis[1][1]/(vol_dims.y-1), 
+																	basis[2][2]/(vol_dims.z-1)	);
 				int res = 0;
 				if(use_N26) {
 					res = extreme_value_check_N26(index, {ix,iy,iz}, vol_dims, in_v_raw_ptr);

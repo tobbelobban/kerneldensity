@@ -39,20 +39,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeExtrema, Volume Extrema}
- * ![](org.inviwo.VolumeExtrema.png?classIdentifier=org.inviwo.VolumeExtrema)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeExtrema : public Processor {
 public:
     VolumeExtrema();
@@ -64,21 +50,31 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+	// ports
     VolumeInport volume_in_;
     MeshOutport mesh_out_;
 
-	BoolProperty select_maxima;
-	BoolProperty select_minima;
-	BoolProperty select_use_N26;
-	BoolProperty select_use_abs;
+	// properties
+	BoolProperty select_maxima;		// if user wants maxima
+	BoolProperty select_minima;		// if user wants minima
+	BoolProperty select_use_N26;	// if user wants to use N_26 neighbourhood when comparing vertices
+	BoolProperty select_use_abs;	// if user wants to use absolute values during comparison
 
 	size_t nr_maxima = 0;
 	size_t nr_minima = 0;
 
 	bool use_abs;
 
-	int extreme_value_check_N26(const size_t index, const size3_t coords, const size3_t vol_dims, const float* vol_data);
-	int extreme_value_check_N6(const size_t index, const size3_t coords, const size3_t vol_dims, const float* vol_data);
+	// functions
+	int extreme_value_check_N26(const size_t index, 
+								const size3_t coords,
+								const size3_t vol_dims,
+								const float* vol_data	);
+	
+	int extreme_value_check_N6(	const size_t index,
+								const size3_t coords,
+								const size3_t vol_dims,
+								const float* vol_data	);
 
 };
 
