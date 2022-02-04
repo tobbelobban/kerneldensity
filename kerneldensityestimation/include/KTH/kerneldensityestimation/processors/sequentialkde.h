@@ -40,25 +40,25 @@ namespace inviwo {
 
 class IVW_MODULE_KERNELDENSITYESTIMATION_API SequentialKDE : public Processor {
 public:
-    SequentialKDE();
-    virtual ~SequentialKDE() = default;
+	SequentialKDE();
+	virtual ~SequentialKDE() = default;
 
-    virtual void process() override;
+	virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+	virtual const ProcessorInfo getProcessorInfo() const override;
+	static const ProcessorInfo processorInfo_;
 
 private:
-    // ports
+    	// ports
 	VolumeInport volume_in_;
 	MeshInport mesh_in_;
-    VolumeOutport volume_out_;
+	VolumeOutport volume_out_;
 
 	// properties
-	FloatProperty bandwidth_prop;	// for choosing KDE bandwidth
+	FloatProperty bandwidth_prop;		// for choosing KDE bandwidth
 	FloatProperty cutoff_prop;		// for choosing stencil size in fastKDE()								                              
-    BoolProperty fast_KDE_prop;		// if user wants fastKDE
-	BoolProperty use_scaling_prop;	// if user wants to scale result
+	BoolProperty fast_KDE_prop;		// if user wants fastKDE
+	BoolProperty use_scaling_prop;		// if user wants to scale result
 
 	// containers for stencil
 	std::shared_ptr<std::vector<float>> kde_stencil;
@@ -68,7 +68,7 @@ private:
 	// functions 
 	void KDE();
 	void fastKDE();
-    void makeKDEStencil(const int nr_extrema, const double h);
+	void makeKDEStencil(const int nr_extrema, const double h);
 	
 };
 
