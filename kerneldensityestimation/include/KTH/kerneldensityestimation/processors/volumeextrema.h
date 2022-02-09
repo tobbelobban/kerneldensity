@@ -41,43 +41,43 @@ namespace inviwo {
 
 class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeExtrema : public Processor {
 public:
-	VolumeExtrema();
-	virtual ~VolumeExtrema() = default;
+    VolumeExtrema();
+    virtual ~VolumeExtrema() = default;
 
-	virtual void process() override;
+    virtual void process() override;
 
-	virtual const ProcessorInfo getProcessorInfo() const override;
-	static const ProcessorInfo processorInfo_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-	// ports
-	VolumeInport volume_in_;
-	MeshOutport mesh_out_;
+    // ports
+    VolumeInport volume_in_;
+    MeshOutport mesh_out_;
 
-	// properties
-	BoolProperty select_maxima;		// if user wants maxima
-	BoolProperty select_minima;		// if user wants minima
-	BoolProperty select_use_N26;		// if user wants to use N_26 neighbourhood when comparing vertices
-	BoolProperty select_use_abs;		// if user wants to use absolute values during comparison
+    // properties
+    BoolProperty select_maxima;		// if user wants maxima
+    BoolProperty select_minima;		// if user wants minima
+    BoolProperty select_use_N26;		// if user wants to use N_26 neighbourhood when comparing vertices
+    BoolProperty select_use_abs;		// if user wants to use absolute values during comparison
 
-	size_t nr_maxima = 0;
-	size_t nr_minima = 0;
+    size_t nr_maxima = 0;
+    size_t nr_minima = 0;
 
-	bool use_abs;
+    bool use_abs;
 
-	// functions
-	int extreme_value_check_N26(	const size_t index, 
-					const size3_t coords,
-					const size3_t vol_dims,
-					const float* vol_data	);
-	
-	int extreme_value_check_N6(	const size_t index,
-					const size3_t coords,
-					const size3_t vol_dims,
-					const float* vol_data	);
+    // functions
+    int extreme_value_check_N26(const size_t index,
+        const size3_t coords,
+        const size3_t vol_dims,
+        const float* vol_data);
+
+    int extreme_value_check_N6(const size_t index,
+        const size3_t coords,
+        const size3_t vol_dims,
+        const float* vol_data);
 
 };
 
-	
+
 
 }  // namespace inviwo
