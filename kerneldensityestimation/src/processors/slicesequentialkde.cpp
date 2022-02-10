@@ -46,11 +46,11 @@ SliceSequentialKDE::SliceSequentialKDE()
     , volume_inport_("volume_inport_")
 	, mesh_inport_("mesh_inport_")
 	, volume_outport_("volume_outport_")
+	, bandwidth_prop_("KDEbandwidth", "Bandwidth", 0.0001f, 0.00001f, 3.0f, 0.00001f)
 	, dimension_("dimension", "Dimension",
               {{"x_dim", "X", Dimension::X},
                {"y_dim", "Y", Dimension::Y},
-               {"z_dim", "Z", Dimension::Z}})
-	, bandwidth_prop_("KDEbandwidth", "Bandwidth", 0.0001, 0.00001, 3, 0.00001) {
+               {"z_dim", "Z", Dimension::Z}}) {
 
 	addPort(volume_inport_);
 	addPort(mesh_inport_);
@@ -66,7 +66,7 @@ void SliceSequentialKDE::process() {
     const std::shared_ptr<const Volume> volume_in_ptr = volume_inport_.getData();
 	auto buff_pair = mesh_inport_.getData()->findBuffer(BufferType::IndexAttrib);
 	const size3_t vol_dims = volume_in_ptr->getDimensions();
-	const int vol_xy = vol_dims.x * vol_dims.y;
+	const auto vol_xy = vol_dims.x * vol_dims.y;
 	const ivec3 delta = {1, vol_dims.x, vol_xy};
 	// compute grid spacing
 	const vec3 spacing_offset = volume_in_ptr->getOffset();
@@ -85,11 +85,11 @@ void SliceSequentialKDE::process() {
 	auto sliced_KDE_vol_repr = std::make_shared<VolumeRAMPrecision<float>>(vol_dims);
     float* sliced_KDE_raw_ptr = sliced_KDE_vol_repr->getDataTyped();
 	// get extrema indices
-	const int num_extrema = buff_pair.first->getRepresentation<BufferRAM>()->getSize();
+	const size_t num_extrema = buff_pair.first->getRepresentation<BufferRAM>()->getSize();
 	const int* extrema_indices = static_cast<const int*>(buff_pair.first->getRepresentation<BufferRAM>()->getData());
 	// precompute constants
-	const float KDE_constant = 1.0 / (2.0 * M_PI);
-	const float h = bandwidth_prop_.get();
+	const float KDE_constant = static_cast<float>(1.0f / (2.0f * M_PI));
+	const double h = bandwidth_prop_.get();
 	// counters for number of extrema per slice
 	int* const extrema_per_slice_counter = new int[vol_dims[islice_dim]]{0};
 	//compute sliced KDE
@@ -108,9 +108,9 @@ void SliceSequentialKDE::process() {
 			for(int i1 = 0; i1 < vol_dims[idim1]; ++i1) {
 				vec2 curr_world_pos = vec2(i1,i2) * vec2(spacing[idim1], spacing[idim2]);
 				vec2 offset_from_ev = (curr_world_pos - extrema_pos)/h;
-				double r_sq =	offset_from_ev.x * offset_from_ev.x +
+				double r_sq =	static_cast<double>(offset_from_ev.x) * offset_from_ev.x +
 								offset_from_ev.y * offset_from_ev.y;
-				sliced_KDE_raw_ptr[offset + i1*delta[idim1]] += KDE_constant * exp(-0.5 * r_sq);
+				sliced_KDE_raw_ptr[offset + i1*delta[idim1]] += static_cast<float>(KDE_constant * exp(-0.5 * r_sq));
 			}	
 			offset += delta[idim2];
 		}
@@ -122,7 +122,7 @@ void SliceSequentialKDE::process() {
 	for (int iz = 0; iz < vol_dims.z; ++iz) {
 		for (int iy = 0; iy < vol_dims.y; ++iy) {
 			for (int ix = 0; ix < vol_dims.x; ++ix) {
-				sliced_KDE_raw_ptr[index] /= (extrema_per_slice_counter[ivec3(ix,iy,iz)[islice_dim]] * denom);
+				sliced_KDE_raw_ptr[index] /= static_cast<float>((extrema_per_slice_counter[ivec3(ix,iy,iz)[islice_dim]] * denom));
 				if(sliced_KDE_raw_ptr[index] > max_val) max_val = sliced_KDE_raw_ptr[index];
 				++index;
 			}
