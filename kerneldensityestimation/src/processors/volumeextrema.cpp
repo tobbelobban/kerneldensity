@@ -249,8 +249,7 @@ void VolumeExtrema::process() {
     }
 
     // print number of extrema
-    LogProcessorInfo("Number of extrema: ");
-    LogProcessorInfo(num_extrema);
+    LogProcessorInfo("Number of extrema: " << num_extrema);
 
     // create buffers for mesh
     auto pos_buffer = std::make_shared<Buffer<vec3>>(std::make_shared<BufferRAMPrecision<vec3>>(pos_v));
