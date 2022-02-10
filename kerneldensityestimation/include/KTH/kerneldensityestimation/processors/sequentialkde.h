@@ -68,7 +68,7 @@ private:
 	// functions 
 	void KDE();
 	void fastKDE();
-	void makeKDEStencil(const int nr_extrema, const double h);
+	void makeKDEStencil(const size_t nr_extrema, const double h);
 	
 };
 

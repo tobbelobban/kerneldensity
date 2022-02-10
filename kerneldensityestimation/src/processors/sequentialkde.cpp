@@ -56,11 +56,11 @@ SequentialKDE::SequentialKDE()
     	, volume_in_("volumeInport")	
 	, mesh_in_("meshInport")
 	, volume_out_("volumeOutport")
-	, bandwidth_prop("KDEbandwidth", "Bandwidth", 0.0001, 0.00001, 3, 0.00001)
-	, cutoff_prop("cutoff", "Cutoff", 0.0001, 0.00001, 3, 0.00001)
+	, bandwidth_prop("KDEbandwidth", "Bandwidth", 0.0001f, 0.00001f, 3.f, 0.00001f)
+	, cutoff_prop("cutoff", "Cutoff", 0.0001f, 0.00001f, 3.f, 0.00001f)
 	, fast_KDE_prop("fast_kde", "Use fast KDE", true)  
 	, use_scaling_prop("scaling", "Use scaling", true)  
-{
+	{
     
 	addPort(volume_in_);
 	addPort(mesh_in_);
@@ -94,7 +94,7 @@ void SequentialKDE::KDE() {
 	const int* extrema_idx = static_cast<const int*>(buff_pair.first->getRepresentation<BufferRAM>()->getData());
 	// init output volume
 	auto KDE_vr_precision = std::make_shared<VolumeRAMPrecision<float>>(vol_dims);
-    	float* KDE_raw_ptr = KDE_vr_precision->getDataTyped();
+    float* KDE_raw_ptr = KDE_vr_precision->getDataTyped();
 	// for finding maximum value of KDE
 	double max_val = 0;
 	// get bandwidth
@@ -104,9 +104,8 @@ void SequentialKDE::KDE() {
 	// Use 8 threads for all consecutive parallel regions
 	omp_set_num_threads(16); 
 	// compute & store KDE
-    	const int xy_ = vol_dims.x * vol_dims.y;
+    const auto xy_ = vol_dims.x * vol_dims.y;
 	const long double KDE_constant = (2.0 * M_PI * sqrt(2.0 * M_PI));
-	const long double denom = (pow(h,3) * extrema_size);
 	for (int i = 0; i < extrema_size; ++i) {
 		const dvec3 extrema_pos = spacing * dvec3(	extrema_idx[i] % vol_dims.x,
 								(extrema_idx[i] / vol_dims.x) % vol_dims.y,
@@ -117,7 +116,7 @@ void SequentialKDE::KDE() {
 			double local_max = max_val;
 			#pragma omp for nowait
 			for (int iz = 0; iz < vol_dims.z; ++iz) {
-				int buff_offset = iz * xy_;
+				const auto buff_offset = iz * xy_;
 				for (int iy = 0; iy < vol_dims.y; ++iy) {
 					for (int ix = 0; ix < vol_dims.x; ++ix) {
 						// calculate current physical pos of grid vertex
@@ -126,9 +125,9 @@ void SequentialKDE::KDE() {
 						dvec3 scaled_delta_pos = (curr_world_pos - extrema_pos)/h;
 						// apply gaussian kernel scaled by h
 						double r_sq = (	scaled_delta_pos.x * scaled_delta_pos.x +
-								scaled_delta_pos.y * scaled_delta_pos.y +
-								scaled_delta_pos.z * scaled_delta_pos.z );
-						KDE_raw_ptr[buff_offset] += KDE_constant * exp(-0.5 * r_sq); 	// add weight from Gaussian kernel
+										scaled_delta_pos.y * scaled_delta_pos.y +
+										scaled_delta_pos.z * scaled_delta_pos.z );
+						KDE_raw_ptr[buff_offset] += static_cast<float>(KDE_constant * exp(-0.5 * r_sq)); 	// add weight from Gaussian kernel
 						if(KDE_raw_ptr[buff_offset] > local_max) local_max = KDE_raw_ptr[buff_offset];
 					}
 				}
@@ -143,22 +142,23 @@ void SequentialKDE::KDE() {
 	}
 	// iterate over entire volume and divide by denom
 	if(use_scaling_prop.get()) {
-	int index = 0;
-	for (int iz = 0; iz < vol_dims.z; ++iz) {
-		for (int iy = 0; iy < vol_dims.y; ++iy) {
-			for (int ix = 0; ix < vol_dims.x; ++ix) {
-				KDE_raw_ptr[index] /= denom;
-				++index;
+		int index = 0;
+		const float denom = static_cast<float>((pow(h,3) * extrema_size));
+		for (int iz = 0; iz < vol_dims.z; ++iz) {
+			for (int iy = 0; iy < vol_dims.y; ++iy) {
+				for (int ix = 0; ix < vol_dims.x; ++ix) {
+					KDE_raw_ptr[index] /= denom;
+					++index;
+				}
 			}
 		}
-	}
-	max_val /= denom;
+		max_val /= denom;
 	}
 	
 	auto kde_vol = std::make_shared<Volume>(KDE_vr_precision);
 	kde_vol->copyMetaDataFrom(*volume_in_.getData());
 	kde_vol->dataMap_ = volume_in_.getData()->dataMap_;
-    	kde_vol->dataMap_.dataRange = vec2(0,max_val);
+    kde_vol->dataMap_.dataRange = vec2(0,max_val);
 	kde_vol->dataMap_.valueRange = vec2(0,max_val);
 	kde_vol->setBasis(volume_in_.getData()->getBasis());
 	kde_vol->setOffset(volume_in_.getData()->getOffset());
@@ -170,7 +170,7 @@ void SequentialKDE::KDE() {
 /*
 	Create stencil used in fast KDE.
 */
-void SequentialKDE::makeKDEStencil(const int extrema_size, const double h) {
+void SequentialKDE::makeKDEStencil(const size_t extrema_size, const double h) {
 	// user input - size of stencil
 	const double cutoff = cutoff_prop.get();
 	const ivec3 vol_dims = volume_in_.getData()->getDimensions();
@@ -198,15 +198,15 @@ void SequentialKDE::makeKDEStencil(const int extrema_size, const double h) {
 		for (int iy = -stencil_half_dims->y; iy <= stencil_half_dims->y; ++iy) {
 			for (int ix = -stencil_half_dims->x; ix <= stencil_half_dims->x; ++ix) {				
                 		double r_sq = 	pow(ix * scaled_spacing.x, 2) +
-						pow( iy * scaled_spacing.y, 2) +
-						pow( iz * scaled_spacing.z, 2);
-				kde_stencil->push_back( KDE_constant * exp(-0.5 * r_sq) );
+										pow( iy * scaled_spacing.y, 2) +
+										pow( iz * scaled_spacing.z, 2);
+				kde_stencil->push_back(static_cast<float>(KDE_constant * exp(-0.5 * r_sq)));
 			}
 		}
 	}
 	// user wants to scale by # of extrema
 	if(use_scaling_prop.get()) {
-		const double denom = (pow(h,3) * extrema_size);
+		const float denom = static_cast<float>((pow(h,3) * extrema_size));
 		int index = 0;
 		for (int iz = 0; iz < stencil_dims->z; ++iz) {
 			for (int iy = 0; iy < stencil_dims->y; ++iy) {
@@ -231,14 +231,14 @@ void SequentialKDE::fastKDE() {
 	const int vol_xy = vol_dims.x * vol_dims.y;	
 	const int vol_size = vol_xy * vol_dims.z;
 	// check that buffer contains data
-    	if (buff_pair.first == nullptr) {
-		LogProcessorError("Error: no index buffer.");
-        	volume_out_.setData(std::make_shared<Volume>(vol_dims, DataFloat32::get()));
-        	return;
-    	}
-    	// get number of & raw pointer to extrema indices
-	const int num_extrema = buff_pair.first->getRepresentation<BufferRAM>()->getSize();
-    	const int* extrema_indices = static_cast<const int*>(buff_pair.first->getRepresentation<BufferRAM>()->getData());
+    if (buff_pair.first == nullptr) {
+	LogProcessorError("Error: no index buffer.");
+        volume_out_.setData(std::make_shared<Volume>(vol_dims, DataFloat32::get()));
+        return;
+    }
+    // get number of & raw pointer to extrema indices
+	const size_t num_extrema = buff_pair.first->getRepresentation<BufferRAM>()->getSize();
+    const int* extrema_indices = static_cast<const int*>(buff_pair.first->getRepresentation<BufferRAM>()->getData());
 	// make stencil for fast KDE
 	const double h = bandwidth_prop.get();
 	makeKDEStencil(num_extrema, h); 
@@ -335,14 +335,14 @@ void SequentialKDE::fastKDE() {
 	}
 	// create output volume and set properties
 	std::shared_ptr<Volume> KDE_vol = std::make_shared<Volume>(KDE_vr_precision);
-    	KDE_vol->setBasis(volume_in_.getData()->getBasis());
+    KDE_vol->setBasis(volume_in_.getData()->getBasis());
 	KDE_vol->setOffset(volume_in_.getData()->getOffset());
 	KDE_vol->copyMetaDataFrom(*volume_in_.getData());	
 	KDE_vol->dataMap_.valueRange = KDE_vol->dataMap_.dataRange = vec2(0, max_val);
 	KDE_vol->setModelMatrix(volume_in_.getData()->getModelMatrix());
 	KDE_vol->setWorldMatrix(volume_in_.getData()->getWorldMatrix());
 	// set volume on out port
-    	volume_out_.setData(KDE_vol);
+    volume_out_.setData(KDE_vol);
 }
 
 void SequentialKDE::process() {
