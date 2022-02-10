@@ -58,12 +58,9 @@ private:
     BoolProperty select_maxima;		// if user wants maxima
     BoolProperty select_minima;		// if user wants minima
     BoolProperty select_use_N26;		// if user wants to use N_26 neighbourhood when comparing vertices
-    BoolProperty select_use_abs;		// if user wants to use absolute values during comparison
 
     size_t nr_maxima = 0;
     size_t nr_minima = 0;
-
-    bool use_abs;
 
     // functions
     int extreme_value_check_N26(const size_t index,

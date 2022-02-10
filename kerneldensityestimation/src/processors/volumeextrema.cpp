@@ -59,17 +59,14 @@ VolumeExtrema::VolumeExtrema()
     , select_maxima("maxima_selector", "Maxima", true)
     , select_minima("minima_selector", "Minima", false)
     , select_use_N26("n26", "Use N_26 neighbourhood", false)
-    , select_use_abs("use_absolute_comp", "Absolute", false)
 {
 
-    use_abs = false;
     addPort(volume_in_);
     addPort(mesh_out_);
 
     addProperty(select_maxima);
     addProperty(select_minima);
     addProperty(select_use_N26);
-    addProperty(select_use_abs);
 }
 
 /*
@@ -101,14 +98,8 @@ int VolumeExtrema::extreme_value_check_N26(const size_t index,
             for (int ix = -1; ix < 2; ++ix) {
                 if ((coords.x + ix) < 0 || (coords.x + ix) >= vol_dims.x) continue;
                 if ((ix == 0) && (iy == 0) && (iz == 0)) continue;
-                if (use_abs) {
-                    maxb = maxb && (abs(curr_val) > abs(vol_data[yz_offset + ix]));
-                    minb = minb && (abs(curr_val) < abs(vol_data[yz_offset + ix]));
-                }
-                else {
-                    maxb = maxb && (curr_val > vol_data[yz_offset + ix]);
-                    minb = minb && (curr_val < vol_data[yz_offset + ix]);
-                }
+                maxb = maxb && (curr_val > vol_data[yz_offset + ix]);
+                minb = minb && (curr_val < vol_data[yz_offset + ix]);
                 if (!(minb || maxb)) return 0;
             }
         }
@@ -140,38 +131,20 @@ int VolumeExtrema::extreme_value_check_N6(const size_t index,
     // compare in x dim
     for (int ix = -1; ix < 2; ix += 2) {
         if ((coords.x + ix) < 0 || (coords.x + ix) >= vol_dims.x) continue;
-        if (use_abs) {
-            maxb = maxb && (abs(curr_val) > abs(vol_data[index + ix]));
-            minb = minb && (abs(curr_val) < abs(vol_data[index + ix]));
-        }
-        else {
-            maxb = maxb && (curr_val > vol_data[index + ix]);
-            minb = minb && (curr_val < vol_data[index + ix]);
-        }
+        maxb = maxb && (curr_val > vol_data[index + ix]);
+        minb = minb && (curr_val < vol_data[index + ix]);
     }
     // compare in y dim
     for (int iy = -1; iy < 2; iy += 2) {
         if ((coords.y + iy) < 0 || (coords.y + iy) >= vol_dims.y) continue;
-        if (use_abs) {
-            maxb = maxb && (abs(curr_val) > abs(vol_data[index + iy * d_x]));
-            minb = minb && (abs(curr_val) < abs(vol_data[index + iy * d_x]));
-        }
-        else {
-            maxb = maxb && (curr_val > vol_data[index + iy * d_x]);
-            minb = minb && (curr_val < vol_data[index + iy * d_x]);
-        }
+        maxb = maxb && (curr_val > vol_data[index + iy * d_x]);
+        minb = minb && (curr_val < vol_data[index + iy * d_x]);
     }
     // compare in z dim
     for (int iz = -1; iz < 2; iz += 2) {
         if ((coords.z + iz) < 0 || (coords.z + iz) >= vol_dims.z) continue;
-        if (use_abs) {
-            maxb = maxb && (abs(curr_val) > abs(vol_data[index + iz * d_xy]));
-            minb = minb && (abs(curr_val) < abs(vol_data[index + iz * d_xy]));
-        }
-        else {
-            maxb = maxb && (curr_val > vol_data[index + iz * d_xy]);
-            minb = minb && (curr_val < vol_data[index + iz * d_xy]);
-        }
+        maxb = maxb && (curr_val > vol_data[index + iz * d_xy]);
+        minb = minb && (curr_val < vol_data[index + iz * d_xy]);
     }
     return minb * -1 + maxb;
 }
@@ -197,7 +170,6 @@ void VolumeExtrema::process() {
     const bool want_minima = select_minima.get();
     const bool want_maxima = select_maxima.get();
     const bool use_N26 = select_use_N26.get();
-    use_abs = select_use_abs.get();
 
     // init buffers for extrema
     const int init_buff_sz = vol_size * 0.005f; // 0.5 % of total volume size
