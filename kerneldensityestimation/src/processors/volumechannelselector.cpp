@@ -82,7 +82,7 @@ void VolumeChannelSelector::process() {
 			min = std::numeric_limits<float>::max();
 			max = std::numeric_limits<float>::min();
 			for(int i = 0; i < vol_size; ++i) {
-				float res =  raw_in_ptr[i][c];
+				float res =  static_cast<float>(raw_in_ptr[i][c]);
 				out_vol_raw_ptr[i] = res;
 				if(res < min) min = res;
 				if(res > max) max = res;
