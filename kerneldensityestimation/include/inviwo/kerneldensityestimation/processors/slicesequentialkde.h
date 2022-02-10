@@ -29,20 +29,42 @@
 
 #pragma once
 
-#include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
+#include <inviwo/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/bufferport.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeExtrema : public Processor {
+/** \docpage{org.inviwo.2DSequentialKDE, 2DSequential KDE}
+ * ![](org.inviwo.2DSequentialKDE.png?classIdentifier=org.inviwo.2DSequentialKDE)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+class IVW_MODULE_KERNELDENSITYESTIMATION_API SliceSequentialKDE : public Processor {
 public:
-    VolumeExtrema();
-    virtual ~VolumeExtrema() = default;
+	
+	enum class Dimension { X = 0, Y = 1, Z = 2 };
+
+    SliceSequentialKDE();
+    virtual ~SliceSequentialKDE() = default;
 
     virtual void process() override;
 
@@ -50,31 +72,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    // ports
-    VolumeInport volume_in_;
-    MeshOutport mesh_out_;
-
-    // properties
-    BoolProperty select_maxima;		// if user wants maxima
-    BoolProperty select_minima;		// if user wants minima
-    BoolProperty select_use_N26;		// if user wants to use N_26 neighbourhood when comparing vertices
-
-    size_t nr_maxima = 0;
-    size_t nr_minima = 0;
-
-    // functions
-    int extreme_value_check_N26(const size_t index,
-        const size3_t coords,
-        const size3_t vol_dims,
-        const float* vol_data);
-
-    int extreme_value_check_N6(const size_t index,
-        const size3_t coords,
-        const size3_t vol_dims,
-        const float* vol_data);
-
+	VolumeInport volume_inport_;
+	MeshInport mesh_inport_;
+    VolumeOutport volume_outport_;
+    
+	FloatProperty bandwidth_prop_;
+	TemplateOptionProperty<Dimension> dimension_;
 };
-
-
 
 }  // namespace inviwo

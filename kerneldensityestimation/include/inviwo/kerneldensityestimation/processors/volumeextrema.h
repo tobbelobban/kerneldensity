@@ -26,17 +26,55 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
-#include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/bufferport.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_KERNELDENSITYESTIMATION_API KernelDensityEstimationModule : public InviwoModule {
+class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeExtrema : public Processor {
 public:
-    KernelDensityEstimationModule(InviwoApplication* app);
-    virtual ~KernelDensityEstimationModule() = default;
+    VolumeExtrema();
+    virtual ~VolumeExtrema() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    // ports
+    VolumeInport volume_in_;
+    MeshOutport mesh_out_;
+
+    // properties
+    BoolProperty select_maxima;		// if user wants maxima
+    BoolProperty select_minima;		// if user wants minima
+    BoolProperty select_use_N26;		// if user wants to use N_26 neighbourhood when comparing vertices
+
+    size_t nr_maxima = 0;
+    size_t nr_minima = 0;
+
+    // functions
+    int extreme_value_check_N26(const size_t index,
+        const size3_t coords,
+        const size3_t vol_dims,
+        const float* vol_data);
+
+    int extreme_value_check_N6(const size_t index,
+        const size3_t coords,
+        const size3_t vol_dims,
+        const float* vol_data);
+
 };
+
+
 
 }  // namespace inviwo

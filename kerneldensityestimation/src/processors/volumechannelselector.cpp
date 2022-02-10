@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <KTH/kerneldensityestimation/processors/volumechannelselector.h>
+#include <inviwo/kerneldensityestimation/processors/volumechannelselector.h>
 
 namespace inviwo {
 

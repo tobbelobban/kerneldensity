@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
+#include <inviwo/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/bufferport.h>

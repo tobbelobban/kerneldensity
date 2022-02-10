@@ -29,47 +29,44 @@
 
 #pragma once
 
-#include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
+#include <inviwo/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
-class IVW_MODULE_KERNELDENSITYESTIMATION_API SequentialKDE : public Processor {
+/** \docpage{org.inviwo.VolumeSubsetDrawer, Volume Subset Drawer}
+ * ![](org.inviwo.VolumeSubsetDrawer.png?classIdentifier=org.inviwo.VolumeSubsetDrawer)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeSubsetDrawer : public Processor {
 public:
-	SequentialKDE();
-	virtual ~SequentialKDE() = default;
+    VolumeSubsetDrawer();
+    virtual ~VolumeSubsetDrawer() = default;
 
-	virtual void process() override;
+    virtual void process() override;
 
-	virtual const ProcessorInfo getProcessorInfo() const override;
-	static const ProcessorInfo processorInfo_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    	// ports
-	VolumeInport volume_in_;
-	MeshInport mesh_in_;
-	VolumeOutport volume_out_;
-
-	// properties
-	FloatProperty bandwidth_prop;		// for choosing KDE bandwidth
-	FloatProperty cutoff_prop;		// for choosing stencil size in fastKDE()								                              
-	BoolProperty fast_KDE_prop;		// if user wants fastKDE
-	BoolProperty use_scaling_prop;		// if user wants to scale result
-
-	// containers for stencil
-	std::shared_ptr<std::vector<float>> kde_stencil;
-	std::shared_ptr<ivec3> stencil_dims;
-	std::shared_ptr<ivec3> stencil_half_dims;
-
-	// functions 
-	void KDE();
-	void fastKDE();
-	void makeKDEStencil(const size_t nr_extrema, const double h);
-	
+	VolumeInport volume_inport_;
+	MeshOutport mesh_outport_;
 };
 
 }  // namespace inviwo

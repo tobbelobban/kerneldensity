@@ -27,14 +27,13 @@
  *
  *********************************************************************************/
 
-#include <KTH/kerneldensityestimation/kerneldensityestimationmodule.h>
-#include <KTH/kerneldensityestimation/processors/slicesequentialkde.h>
-#include <KTH/kerneldensityestimation/processors/fullkde.h>
-#include <KTH/kerneldensityestimation/processors/fullkdecl.h>
-#include <KTH/kerneldensityestimation/processors/sequentialkde.h>
-#include <KTH/kerneldensityestimation/processors/volumechannelselector.h>
-#include <KTH/kerneldensityestimation/processors/volumeextrema.h>
-#include <KTH/kerneldensityestimation/processors/volumesubsetdrawer.h>
+#include <inviwo/kerneldensityestimation/kerneldensityestimationmodule.h>
+#include <inviwo/kerneldensityestimation/processors/slicesequentialkde.h>
+#include <inviwo/kerneldensityestimation/processors/fullkde.h>
+#include <inviwo/kerneldensityestimation/processors/sequentialkde.h>
+#include <inviwo/kerneldensityestimation/processors/volumechannelselector.h>
+#include <inviwo/kerneldensityestimation/processors/volumeextrema.h>
+#include <inviwo/kerneldensityestimation/processors/volumesubsetdrawer.h>
 
 namespace inviwo {
 
@@ -47,14 +46,10 @@ KernelDensityEstimationModule::KernelDensityEstimationModule(InviwoApplication* 
     // Processors
     registerProcessor<SliceSequentialKDE>();
     registerProcessor<FullKDE>();
-    registerProcessor<FullKDECL>();
-    // registerProcessor<KernelDensityEstimationProcessor>();
     registerProcessor<SequentialKDE>();
     registerProcessor<VolumeChannelSelector>();
     registerProcessor<VolumeExtrema>();
     registerProcessor<VolumeSubsetDrawer>();
-    
-	OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
     
 	// Properties
     // registerProperty<KernelDensityEstimationProperty>();

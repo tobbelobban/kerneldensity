@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <KTH/kerneldensityestimation/processors/fullkde.h>
+#include <inviwo/kerneldensityestimation/processors/fullkde.h>
 
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/datastructures/volume/volume.h>

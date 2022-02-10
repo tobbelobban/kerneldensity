@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <KTH/kerneldensityestimation/processors/slicesequentialkde.h>
+#include <inviwo/kerneldensityestimation/processors/slicesequentialkde.h>
 
 namespace inviwo {
 

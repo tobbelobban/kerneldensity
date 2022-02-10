@@ -29,19 +29,20 @@
 
 #pragma once
 
-#include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
+#include <inviwo/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeSubsetDrawer, Volume Subset Drawer}
- * ![](org.inviwo.VolumeSubsetDrawer.png?classIdentifier=org.inviwo.VolumeSubsetDrawer)
+/** \docpage{org.inviwo.VolumeChannelSelector, Volume Channel Selector}
+ * ![](org.inviwo.VolumeChannelSelector.png?classIdentifier=org.inviwo.VolumeChannelSelector)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -54,10 +55,12 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeSubsetDrawer : public Processor {
+class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeChannelSelector : public Processor {
 public:
-    VolumeSubsetDrawer();
-    virtual ~VolumeSubsetDrawer() = default;
+	enum class Dimension { X = 0, Y = 1, Z = 2, W = 3 };
+
+    VolumeChannelSelector();
+    virtual ~VolumeChannelSelector() = default;
 
     virtual void process() override;
 
@@ -65,8 +68,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-	VolumeInport volume_inport_;
-	MeshOutport mesh_outport_;
+    VolumeInport volume_in_;
+	VolumeOutport volume_out_;
+
+	TemplateOptionProperty<Dimension> dimension_;
 };
 
 }  // namespace inviwo

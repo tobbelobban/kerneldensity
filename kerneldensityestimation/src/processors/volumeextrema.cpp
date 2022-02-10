@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <KTH/kerneldensityestimation/processors/volumeextrema.h>
+#include <inviwo/kerneldensityestimation/processors/volumeextrema.h>
 
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/datastructures/volume/volume.h>

@@ -26,52 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <KTH/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/kerneldensityestimation/kerneldensityestimationmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeChannelSelector, Volume Channel Selector}
- * ![](org.inviwo.VolumeChannelSelector.png?classIdentifier=org.inviwo.VolumeChannelSelector)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-class IVW_MODULE_KERNELDENSITYESTIMATION_API VolumeChannelSelector : public Processor {
+class IVW_MODULE_KERNELDENSITYESTIMATION_API KernelDensityEstimationModule : public InviwoModule {
 public:
-	enum class Dimension { X = 0, Y = 1, Z = 2, W = 3 };
-
-    VolumeChannelSelector();
-    virtual ~VolumeChannelSelector() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    VolumeInport volume_in_;
-	VolumeOutport volume_out_;
-
-	TemplateOptionProperty<Dimension> dimension_;
+    KernelDensityEstimationModule(InviwoApplication* app);
+    virtual ~KernelDensityEstimationModule() = default;
 };
 
 }  // namespace inviwo

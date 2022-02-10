@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <KTH/kerneldensityestimation/processors/volumesubsetdrawer.h>
+#include <inviwo/kerneldensityestimation/processors/volumesubsetdrawer.h>
 
 namespace inviwo {
 
