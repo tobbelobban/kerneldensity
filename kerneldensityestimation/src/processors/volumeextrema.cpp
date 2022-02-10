@@ -172,7 +172,7 @@ void VolumeExtrema::process() {
     const bool use_N26 = select_use_N26.get();
 
     // init buffers for extrema
-    const int init_buff_sz = vol_size * 0.005f; // 0.5 % of total volume size
+    const int init_buff_sz = (int)(vol_size * 0.005f); // 0.5 % of total volume size
     std::vector<vec3> pos_v;
     std::vector<int> index_v;
     pos_v.reserve(init_buff_sz);
@@ -203,14 +203,14 @@ void VolumeExtrema::process() {
                 case -1:	// minimum						
                     if (want_minima) {
                         pos_v.push_back(physical_pos);
-                        index_v.push_back(index);
+                        index_v.push_back((int)index);
                         ++num_extrema;
                     }
                     break;
                 case 1:		// maximum
                     if (want_maxima) {
                         pos_v.push_back(physical_pos);
-                        index_v.push_back(index);
+                        index_v.push_back((int)index);
                         ++num_extrema;
                     }
                     break;
